@@ -12,6 +12,7 @@ wheels/
 # macOS
 .DS_Store
 
-# Generated example output
+# Generated example output (transient)
 examples/*.png
+benchmarks/run.log
 .pytest_cache/

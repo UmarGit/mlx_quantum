@@ -6,9 +6,9 @@ Fast, differentiable quantum machine learning in pure [Apple MLX](https://github
 
 Statevector simulation runs on the Metal GPU and is differentiable end-to-end
 through MLX autodiff — so a quantum layer trains like any other `mlx.nn` module,
-with no custom gradient code. Validated against Qiskit to float32 precision, and
-**~100–500× faster** than driving Qiskit's `EstimatorQNN` from Python for small
-circuits (see [`examples/benchmark_vs_qiskit.py`](examples/benchmark_vs_qiskit.py)).
+with no custom gradient code. Forward values **and** gradients match Qiskit to
+~1e-6 (float32), and it is **~100–400× faster** end-to-end than driving Qiskit's
+`EstimatorQNN` from Python. See [Validation](#validation) for the evidence.
 
 ## Install
 
@@ -83,7 +83,8 @@ tensor `[out0, out1, in0, in1]`.
 ## How it works
 
 A statevector is a complex `mx.array` of shape `(batch,) + (2,) * num_qubits`;
-qubit `q` sits on axis `q + 1` in little-endian order (matching Qiskit). Gates are
+qubit ordering is little-endian to match Qiskit exactly (qubit 0 is the fastest
+index, so flattening reproduces Qiskit's amplitude order). Gates are
 applied as `einsum` contractions, so the entire simulation is differentiable and
 GPU-resident. Because there is no custom `vjp` and no NumPy round-trip, `mx.grad`
 differentiates the circuit directly — including through complex amplitudes.
@@ -97,8 +98,41 @@ is also a scatter).
 
 ```bash
 uv run python examples/simple_mlp.py                             # hybrid MLP training
-uv run --extra examples python examples/benchmark_vs_qiskit.py   # speed + accuracy vs Qiskit
+uv run --extra examples python examples/benchmark_vs_qiskit.py   # quick speed + accuracy vs Qiskit
 ```
+
+## Validation
+
+Two tracks — is it correct, and is the speed claim fair? All measurements are
+**noiseless statevector, float32**. Regenerate with
+`uv run --extra examples python benchmarks/validate.py` (details in
+[`benchmarks/`](benchmarks/)).
+
+**Correctness.** Forward values and gradients are compared against Qiskit
+(`Statevector` and `ReverseEstimatorGradient`) over 142 random circuits covering
+every gate (`H, X, Y, Z, rx, ry, rz, CX, CZ`); per-circuit error stays at ~1e-6.
+(The *batch-summed* gradient error on the accuracy plot climbs to ~1e-5 by 8
+qubits — that is float32 accumulation from summing 128 terms into one number,
+still ≥5 significant figures, not a modelling error.) Gates are checked for
+unitarity, the state norm is checked after every layer, and an asymmetric circuit
+pins the little-endian qubit order to Qiskit's.
+
+| | ![accuracy](benchmarks/accuracy_vs_qubits.png) | ![error distribution](benchmarks/error_distribution.png) |
+|---|---|---|
+
+**Performance.** Two honest baselines. End-to-end vs `EstimatorQNN` driven from
+Python (~100–400×), and kernel-level vs Aer's compiled statevector estimator
+(~1.7–3×, forward only) — so the win is not just deleted orchestration. Wall-time
+is shown until MLX hits the memory cliff (~22–26 qubits, single statevector).
+
+| | ![speedup](benchmarks/speedup_vs_qubits.png) | ![wall time](benchmarks/walltime_vs_qubits.png) |
+|---|---|---|
+
+**Trains identically.** Same circuit, init, data, and optimizer (SGD): the MLX
+layer (`mx.grad`) and the Qiskit QNN (`qnn.backward`) produce the same loss curve
+to ~1e-7 — same training, just faster.
+
+![training overlay](benchmarks/training_overlay.png)
 
 ## Tests
 
@@ -106,9 +140,10 @@ uv run --extra examples python examples/benchmark_vs_qiskit.py   # speed + accur
 uv run pytest
 ```
 
-Covers gate/statevector correctness, layer training, a finite-difference gradient
-check, and cross-validation of both forward values and gradients against Qiskit
-(skipped automatically if Qiskit is not installed).
+Covers gate/statevector correctness, gate unitarity and norm preservation, the
+little-endian convention, layer training, a finite-difference gradient check, and
+forward + weight-gradient + input-gradient parity with Qiskit across a random gate
+sweep (Qiskit-dependent tests skip automatically if Qiskit is absent).
 
 ## Changelog
 
