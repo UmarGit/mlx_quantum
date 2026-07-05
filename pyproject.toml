@@ -23,7 +23,7 @@ examples = [
 ]
 
 [project.urls]
-Repository = "https://github.com/umarsheikh303/mlx-quantum"
+Repository = "https://github.com/UmarGit/mlx-quantum"
 
 [build-system]
 requires = ["hatchling"]
