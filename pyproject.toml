@@ -1,0 +1,39 @@
+[project]
+name = "mlx-quantum"
+version = "0.1.0"
+description = "Fast, differentiable quantum-machine-learning in pure Apple MLX — GPU statevector simulation with native autodiff."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+keywords = ["mlx", "quantum", "quantum-machine-learning", "differentiable", "apple-silicon"]
+dependencies = [
+    "mlx>=0.31.2",
+    "numpy>=2.5.1",
+]
+
+# Qiskit is only needed to cross-validate/benchmark against; the library itself
+# depends on nothing but MLX and NumPy.
+[project.optional-dependencies]
+examples = ["matplotlib>=3.9", "qiskit>=2.5.0", "qiskit-machine-learning>=0.9.0"]
+
+[project.urls]
+Repository = "https://github.com/umarsheikh303/mlx-quantum"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mlx_quantum"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1",
+    "matplotlib>=3.9",
+    "qiskit>=2.5.0",
+    "qiskit-machine-learning>=0.9.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
