@@ -14,7 +14,13 @@ dependencies = [
 # Qiskit is only needed to cross-validate/benchmark against; the library itself
 # depends on nothing but MLX and NumPy.
 [project.optional-dependencies]
-examples = ["matplotlib>=3.9", "qiskit>=2.5.0", "qiskit-machine-learning>=0.9.0"]
+examples = [
+    "matplotlib>=3.9",
+    "qiskit>=2.5.0",
+    "qiskit-machine-learning>=0.9.0",
+    "qiskit-algorithms>=0.4.0",
+    "qiskit-aer>=0.17.2",
+]
 
 [project.urls]
 Repository = "https://github.com/umarsheikh303/mlx-quantum"
@@ -32,6 +38,8 @@ dev = [
     "matplotlib>=3.9",
     "qiskit>=2.5.0",
     "qiskit-machine-learning>=0.9.0",
+    "qiskit-algorithms>=0.4.0",
+    "qiskit-aer>=0.17.2",
 ]
 
 [tool.pytest.ini_options]

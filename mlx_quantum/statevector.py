@@ -1,9 +1,10 @@
 """Batched, differentiable statevector simulation in pure MLX.
 
-A statevector is a complex ``mx.array`` of shape ``(batch,) + (2,) * num_qubits``;
-qubit ``q`` lives on axis ``q + 1`` in little-endian order (matching Qiskit).
-Gates are applied as ``einsum`` contractions, so the whole simulation runs on the
-Metal GPU and is differentiable end to end via ``mx.grad`` — no custom vjp.
+A statevector is a complex ``mx.array`` of shape ``(batch,) + (2,) * num_qubits``.
+Qubit ordering is little-endian to match Qiskit: qubit 0 is the fastest-varying
+index, so flattening the state reproduces Qiskit's amplitude order exactly. Gates
+are applied as ``einsum`` contractions, so the whole simulation runs on the Metal
+GPU and is differentiable end to end via ``mx.grad`` — no custom vjp.
 """
 
 import math
@@ -22,29 +23,37 @@ def zero_state(batch: int, num_qubits: int) -> mx.array:
     return mx.array(np.broadcast_to(amp, (batch,) + (2,) * num_qubits).copy())
 
 
+def _axis(qubit: int, n: int) -> int:
+    """Little-endian: qubit 0 is the last axis (fastest index when flattened)."""
+    return n - 1 - qubit
+
+
 def apply_1q(state: mx.array, gate: mx.array, qubit: int) -> mx.array:
     """Apply a single-qubit gate. ``gate`` is ``(2, 2)`` or, per-sample, ``(batch, 2, 2)``."""
     n = state.ndim - 1
     axes = _AXES[:n]
-    src, tgt = "B" + axes, "B" + axes[:qubit] + "Z" + axes[qubit + 1:]
+    q = _axis(qubit, n)
+    src, tgt = "B" + axes, "B" + axes[:q] + "Z" + axes[q + 1:]
     if gate.ndim == 2:
-        return mx.einsum(f"{src},Z{axes[qubit]}->{tgt}", state, gate)
-    return mx.einsum(f"{src},BZ{axes[qubit]}->{tgt}", state, gate)
+        return mx.einsum(f"{src},Z{axes[q]}->{tgt}", state, gate)
+    return mx.einsum(f"{src},BZ{axes[q]}->{tgt}", state, gate)
 
 
 def apply_2q(state: mx.array, gate: mx.array, q0: int, q1: int) -> mx.array:
     """Apply a two-qubit gate given as a ``(2, 2, 2, 2)`` tensor ``[out0, out1, in0, in1]``."""
     n = state.ndim - 1
     axes = _AXES[:n]
+    a0, a1 = _axis(q0, n), _axis(q1, n)
     tgt = list("B" + axes)
-    tgt[1 + q0], tgt[1 + q1] = "Y", "Z"
-    return mx.einsum(f"B{axes},YZ{axes[q0]}{axes[q1]}->{''.join(tgt)}", state, gate)
+    tgt[1 + a0], tgt[1 + a1] = "Y", "Z"
+    return mx.einsum(f"B{axes},YZ{axes[a0]}{axes[a1]}->{''.join(tgt)}", state, gate)
 
 
 def expval_z(state: mx.array, qubit: int) -> mx.array:
     """<Z> on one qubit, shape ``(batch,)``."""
     probs = mx.abs(state) ** 2
-    axes = [1 + j for j in range(state.ndim - 1) if j != qubit]
+    keep = _axis(qubit, state.ndim - 1)
+    axes = [1 + j for j in range(state.ndim - 1) if j != keep]
     marg = mx.sum(probs, axis=axes) if axes else probs
     return marg[:, 0] - marg[:, 1]
 
