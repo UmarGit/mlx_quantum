@@ -1,6 +1,6 @@
 # mlx-quantum
 
-[![CI](https://github.com/UmarGit/mlx-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/UmarGit/mlx-quantum/actions/workflows/ci.yml)
+[![CI](https://github.com/UmarGit/mlx_quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/UmarGit/mlx_quantum/actions/workflows/ci.yml)
 
 Fast, differentiable quantum machine learning in pure [Apple MLX](https://github.com/ml-explore/mlx).
 

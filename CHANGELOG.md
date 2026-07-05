@@ -37,5 +37,5 @@ library in pure Apple MLX.
   float32); ~100–400× faster end-to-end than driving `EstimatorQNN` from Python,
   and ~1.7–3× faster than Aer's compiled statevector on the forward pass.
 
-[Unreleased]: https://github.com/UmarGit/mlx-quantum/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/UmarGit/mlx-quantum/releases/tag/v0.1.0
+[Unreleased]: https://github.com/UmarGit/mlx_quantum/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/UmarGit/mlx_quantum/releases/tag/v0.1.0
