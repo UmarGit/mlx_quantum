@@ -106,7 +106,7 @@ uv run --extra examples python examples/benchmark_vs_qiskit.py   # quick speed +
 Two tracks — is it correct, and is the speed claim fair? All measurements are
 **noiseless statevector, float32**. Regenerate with
 `uv run --extra examples python benchmarks/validate.py` (details in
-[`benchmarks/`](benchmarks/)).
+[`benchmarks/`](https://github.com/UmarGit/mlx_quantum/tree/main/benchmarks)).
 
 **Correctness.** Forward values and gradients are compared against Qiskit
 (`Statevector` and `ReverseEstimatorGradient`) over 142 random circuits covering
@@ -117,7 +117,7 @@ still ≥5 significant figures, not a modelling error.) Gates are checked for
 unitarity, the state norm is checked after every layer, and an asymmetric circuit
 pins the little-endian qubit order to Qiskit's.
 
-| | ![accuracy](benchmarks/accuracy_vs_qubits.png) | ![error distribution](benchmarks/error_distribution.png) |
+| | ![accuracy](https://raw.githubusercontent.com/UmarGit/mlx_quantum/main/benchmarks/accuracy_vs_qubits.png) | ![error distribution](https://raw.githubusercontent.com/UmarGit/mlx_quantum/main/benchmarks/error_distribution.png) |
 |---|---|---|
 
 **Performance.** Two honest baselines. End-to-end vs `EstimatorQNN` driven from
@@ -125,14 +125,14 @@ Python (~100–400×), and kernel-level vs Aer's compiled statevector estimator
 (~1.7–3×, forward only) — so the win is not just deleted orchestration. Wall-time
 is shown until MLX hits the memory cliff (~22–26 qubits, single statevector).
 
-| | ![speedup](benchmarks/speedup_vs_qubits.png) | ![wall time](benchmarks/walltime_vs_qubits.png) |
+| | ![speedup](https://raw.githubusercontent.com/UmarGit/mlx_quantum/main/benchmarks/speedup_vs_qubits.png) | ![wall time](https://raw.githubusercontent.com/UmarGit/mlx_quantum/main/benchmarks/walltime_vs_qubits.png) |
 |---|---|---|
 
 **Trains identically.** Same circuit, init, data, and optimizer (SGD): the MLX
 layer (`mx.grad`) and the Qiskit QNN (`qnn.backward`) produce the same loss curve
 to ~1e-7 — same training, just faster.
 
-![training overlay](benchmarks/training_overlay.png)
+![training overlay](https://raw.githubusercontent.com/UmarGit/mlx_quantum/main/benchmarks/training_overlay.png)
 
 ## Tests
 
@@ -147,8 +147,8 @@ sweep (Qiskit-dependent tests skip automatically if Qiskit is absent).
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/UmarGit/mlx_quantum/blob/main/CHANGELOG.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/UmarGit/mlx_quantum/blob/main/LICENSE).

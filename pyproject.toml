@@ -1,6 +1,6 @@
 [project]
 name = "mlx-quantum"
-version = "0.1.0"
+version = "0.1.1"
 description = "Fast, differentiable quantum-machine-learning in pure Apple MLX — GPU statevector simulation with native autodiff."
 readme = "README.md"
 license = "MIT"
@@ -31,6 +31,18 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["mlx_quantum"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/mlx_quantum",
+    "/tests",
+    "/examples",
+    "/benchmarks",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
 
 [dependency-groups]
 dev = [

@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-07-06
+
+### Fixed
+- README images and doc links now use absolute GitHub URLs so they render on PyPI
+  (relative paths only resolved on GitHub).
+- `sdist` now ships an explicit file list, keeping stray working-tree files out of
+  the published source distribution.
+
 ## [0.1.0] - 2026-07-05
 
 Initial release: a native, GPU-accelerated, differentiable quantum-machine-learning
@@ -37,5 +45,6 @@ library in pure Apple MLX.
   float32); ~100–400× faster end-to-end than driving `EstimatorQNN` from Python,
   and ~1.7–3× faster than Aer's compiled statevector on the forward pass.
 
-[Unreleased]: https://github.com/UmarGit/mlx_quantum/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/UmarGit/mlx_quantum/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/UmarGit/mlx_quantum/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/UmarGit/mlx_quantum/releases/tag/v0.1.0
